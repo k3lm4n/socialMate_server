@@ -39,4 +39,44 @@ routes.post("/", async (req, res) => {
   res.status(200).json({ post });
 });
 
+
+
+routes.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  const post = await prisma.post.delete({
+    where: {
+      id,
+    },
+  });
+  res.status(200).json({ post });
+});
+
+
+routes.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, content, user_id, category_id, attatchments } = req.body;
+  const post = await prisma.post.update({
+    where: {
+      id,
+
+    },
+    data: {
+      title,
+      content,
+      authorId: user_id,
+      categoryIDs: category_id,
+      attatchments,
+    },
+  });
+  res.status(200).json({ post });
+
+});
+
+
+
+
+
+
+
+
 export default routes;

@@ -48,6 +48,39 @@ routes.delete("/:id", async (req: Request, res: Response) => {
   res.status(200).json({ user });
 });
 
+routes.put("/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, email, address,role } = req.body;
+  console.log(req.body);
+  const user = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      name,
+      email,
+      address,
+      role,
+    },
+  });
+  res.status(200).json({ user });
+});
+
+routes.put("/password/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { password } = req.body;
+  const hash = await bcrypt.hash(password, 10);
+  const user = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      password: hash,
+    },
+  });
+  res.status(200).json({ user });
+});
+
 
 
 export default routes;
