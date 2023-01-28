@@ -23,6 +23,7 @@ model User {
   preferences  userPreferences?
   password     String
   Comment      Comment[]
+  birthday     DateTime?
 }
 
 // Address is an embedded document
@@ -100,7 +101,7 @@ model Attatchment {
 
 model Blob {
   id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  data          Bytes
+  data          String
   Attatchment   Attatchment? @relation(fields: [attatchmentId], references: [id])
   attatchmentId String?      @db.ObjectId
 }

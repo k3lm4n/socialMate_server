@@ -24,7 +24,7 @@ routes.get("/:id", async (req: Request, res: Response) => {
   res.status(200).json({ users });
 });
 routes.post("/", async (req: Request, res: Response) => {
-  const { name, email, password, address } = req.body;
+  const { name, email, password, address,birthday } = req.body;
   const hash = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
     data: {
@@ -32,10 +32,11 @@ routes.post("/", async (req: Request, res: Response) => {
       email,
       password: hash,
       address,
+      birthday,
     },
   });
 
-  res.status(200).json({ user });
+  res.status(201).json({ user });
 });
 
 routes.delete("/:id", async (req: Request, res: Response) => {
@@ -80,6 +81,8 @@ routes.put("/password/:id", async (req: Request, res: Response) => {
   });
   res.status(200).json({ user });
 });
+
+routes.get
 
 
 
