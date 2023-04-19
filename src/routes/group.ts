@@ -14,7 +14,6 @@ routes.get("/", async (req: Request, res: Response) => {
   res.status(200).json({ groups });
 });
 
-
 routes.get("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const groups = await prisma.group.findUnique({
@@ -26,14 +25,12 @@ routes.get("/:id", async (req: Request, res: Response) => {
   res.status(200).json({ groups });
 });
 
-
 routes.post("/", async (req: Request, res: Response) => {
-    const { name, description, categories } = req.body;
+  const { name, description, categories } = req.body;
   const group = await prisma.group.create({
     data: {
-        name,
-        description,
-        categories,
+      name,
+      description,
     },
   });
 
@@ -51,27 +48,20 @@ routes.delete("/:id", async (req: Request, res: Response) => {
 });
 
 routes.put("/:id", async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { name, description, categories, userId } = req.body;
-    const group = await prisma.group.update({
-        where: {
-            id,
-        },
-        data: {
-            name,
-            description,
-            categories,
-            userId
-        },
-    });
-    res.status(200).json({ group });
+  const { id } = req.params;
+  const { name, description, categories, userId } = req.body;
+  const group = await prisma.group.update({
+    where: {
+      id,
+    },
+    data: {
+      name,
+      description,
+      categories,
+      userId,
+    },
+  });
+  res.status(200).json({ group });
 });
-
-
-
-
-
-
-
 
 export default routes;
