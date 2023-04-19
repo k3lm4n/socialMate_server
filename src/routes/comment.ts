@@ -1,7 +1,6 @@
 import { Router } from "express";
 ("express");
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 
 const routes = Router();

@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
+import userController from "../controllers/user";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 
@@ -23,21 +24,7 @@ routes.get("/:id", async (req: Request, res: Response) => {
   console.log(users);
   res.status(200).json({ users });
 });
-routes.post("/", async (req: Request, res: Response) => {
-  const { name, email, password, address,birthday } = req.body;
-  const hash = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hash,
-      address,
-      birthday,
-    },
-  });
-
-  res.status(201).json({ user });
-});
+routes.post("/", userController.register);
 
 routes.delete("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -50,21 +37,7 @@ routes.delete("/:id", async (req: Request, res: Response) => {
 });
 
 routes.put("/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { name, email, address,role } = req.body;
-  console.log(req.body);
-  const user = await prisma.user.update({
-    where: {
-      id,
-    },
-    data: {
-      name,
-      email,
-      address,
-      role,
-    },
-  });
-  res.status(200).json({ user });
+ 
 });
 
 routes.put("/password/:id", async (req: Request, res: Response) => {
@@ -82,8 +55,6 @@ routes.put("/password/:id", async (req: Request, res: Response) => {
   res.status(200).json({ user });
 });
 
-routes.get
-
-
+routes.get;
 
 export default routes;

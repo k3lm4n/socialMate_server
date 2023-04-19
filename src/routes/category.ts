@@ -11,8 +11,6 @@ dotenv.config();
 
 routes.route("/").get(async (req, res) => {
   const categories = await prisma.category.findMany();
-  console.log("estou");
-  //   const users = await prisma.category.findMany();
     res.status(200).json({categories});
 });
 
