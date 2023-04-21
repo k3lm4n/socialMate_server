@@ -16,6 +16,7 @@ const PORT = process.env.PORT;
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors());
 
 app.set("trust proxy", 1); // trust first proxy
 
