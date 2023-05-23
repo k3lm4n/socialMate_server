@@ -6,6 +6,7 @@ routes.post("/", AuthController.login);
 
 routes.get("/logout", AuthController.logout);
 
+routes.get("/me", AuthController.me);
 
 
 export default routes;

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import userRoutes from "./user";
-import postRoutes from "./post";
-import groupRoutes from "./group";
-import categoryRoutes from "./category";
-import commentRoutes from "./comment";
-import authRoutes from "./auth";
+import userRoutes from "./user.routes";
+import postRoutes from "./post.routes";
+import groupRoutes from "./group.routes";
+import categoryRoutes from "./category.routes";
+import commentRoutes from "./comment.routes";
+import authRoutes from "./auth.routes";
 
 const app = Router();
 

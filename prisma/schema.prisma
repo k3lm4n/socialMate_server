@@ -25,7 +25,14 @@ model User {
   posts        Post[]           @relation("author")
   preferences  userPreferences?
   Comment      Comment[]
-  contacts     Contact[]
+
+  followedBy    User[]   @relation("UserFollows", fields: [followedByIDs], references: [id])
+  followedByIDs String[] @db.ObjectId
+  following     User[]   @relation("UserFollows", fields: [followingIDs], references: [id])
+  followingIDs  String[] @db.ObjectId
+
+  MessageSent   Message[] @relation("Sender")
+  MessageRecive Message[] @relation("PrivateMessage")
 
   createdAt DateTime @default(now())
 }
@@ -104,8 +111,11 @@ model Group {
   User       User?    @relation(fields: [userId], references: [id])
   userId     String[] @db.ObjectId
   categories String[] @db.ObjectId
-  creator    User?     @relation("creator", fields: [creatorId], references: [id])
-  creatorId  String?   @db.ObjectId
+
+  creator   User?   @relation("creator", fields: [creatorId], references: [id])
+  creatorId String? @db.ObjectId
+
+  messages Message[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -134,41 +144,20 @@ model Blob {
   updatedAt DateTime @updatedAt
 }
 
-model Conversation {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  participants Int[]
-  messages     Message[]
-  contacts     Contact[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Contact {
-  id             String @id @default(auto()) @map("_id") @db.ObjectId
-  username       String @unique
-  photo          String
-  lastMessage    Json?
-  unreadMessages Int    @default(0)
-  status         Status @default(offline)
-
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-  conversationId String       @db.ObjectId
-  User           User?        @relation(fields: [userId], references: [id])
-  userId         String?      @db.ObjectId
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 
 model Message {
   id   String @id @default(auto()) @map("_id") @db.ObjectId
-  from Int
-  text String
+  content String
 
-  Conversation   Conversation? @relation(fields: [conversationId], references: [id])
-  conversationId String?       @db.ObjectId
+  sender   User   @relation("Sender", fields: [senderId], references: [id])
+  senderId String @db.ObjectId
+
+  group   Group?  @relation(fields: [groupId], references: [id])
+  groupId String? @db.ObjectId
+
+  receiver   User?   @relation("PrivateMessage", fields: [receiverId], references: [id])
+  receiverId String? @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

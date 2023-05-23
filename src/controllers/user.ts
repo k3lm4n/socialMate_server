@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { registerSchema } from "../utils/validator/user";
+import { stringify } from "querystring";
 
 const prisma = new PrismaClient();
 
@@ -66,11 +67,46 @@ class UserController {
     }
   }
 
-  async getAll(req: Request, res: Response) {}
+  async getAll(req: Request, res: Response) {
+    try {
+      const users = await prisma.user.findMany();
+      res.status(200).json({ users });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ message: error.message || "Erro" });
+    }
+  }
 
-  async getById(req: Request, res: Response) {}
+  async getById(req: Request, res: Response) {
+    const { id } = req.params;
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
+      res.status(200).json({ user });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ message: error.message || "Erro" });
+    }
+  }
 
-  async search(req: Request, res: Response) {}
+  async search(req: Request, res: Response) {
+    const { name } = req.query;
+    try {
+      const users = await prisma.user.findMany({
+        where: {
+          name: {
+            contains: String(name),
+          },
+        },
+      });
+      res.status(200).json({ users });
+    } catch (error: any) {
+      return res.status(500).json({ message: error.message || "Erro" });
+    }
+  }
 }
 
 export default new UserController();
