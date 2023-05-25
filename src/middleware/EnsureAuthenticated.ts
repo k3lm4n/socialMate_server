@@ -7,7 +7,10 @@ export const ensureAuthenticated: RequestHandler = (
   next: NextFunction
 ) => {
   
-  const  tokens  = req.cookies.tokens ;
+  const [auth, tokens]  = req.headers.authorization?.split(" ") as [string, string];
+
+  if (!auth || auth !== "Bearer")
+    return res.status(401).json({ message: "Token não encontrado" });
   
   if (!tokens) 
     return res.status(401).json({ message: "Token não encontrado" });

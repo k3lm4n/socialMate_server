@@ -47,7 +47,7 @@ class ControllerAuth {
         httpOnly: true,
         secure: true,
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-        sameSite: "none",
+        sameSite: "strict",
       });
 
       const userReponse = {
@@ -69,14 +69,14 @@ class ControllerAuth {
       httpOnly: true,
       secure: true,
       expires: new Date(Date.now()),
-      sameSite: "none",
+      sameSite: "strict",
     });
     res.status(200).json({ message: "Logout" });
   }
 
   async me (req: Request, res: Response) {
     
-    const { user_id } = ParserService(req.cookies);
+    const { user_id } = ParserService(req.headers.authorization as string);
     try {
       const user = await prisma.user.findUnique({
         where: {

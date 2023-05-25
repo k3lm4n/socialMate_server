@@ -6,52 +6,65 @@ import MessageModel from "../models/message";
 interface Room {
   id: string;
   senderId: string;
-  groupId?: string;
   receiverId?: string;
+  socketId: string;
 }
 
 const users: Room[] = [];
 const messageModel = new MessageModel();
+const messages: Message[] = [];
 
 io.on("connection", (socket) => {
-//   console.log("connected ", socket.id);
-  socket.on("createdMessage", (data) => {
+  //   console.log("connected ", socket.id);
+  socket.on("connectedOn", (data, callback) => {
+    // console.log(data);
 
-    console.log(data);
+    socket.join(data.receiverId);
 
     const userInRoom = users.find(
       (user) =>
-        user.senderId === data.senderId &&
-        (user.groupId === data.groupId || user.receiverId === data.receiverId)
+        user.senderId === data.senderId && user?.receiverId === data?.receiverId
     );
 
     if (userInRoom) {
-      userInRoom.id = socket.id;
+      userInRoom.socketId = socket.id;
     } else {
       users.push({
-        id: socket.id,
+        id: data.id,
         senderId: data.senderId,
-        groupId: data.groupId,
-        receiverId: data.receiverId,
+        receiverId: data?.receiverId,
+        socketId: socket.id,
       });
     }
-
     // console.log(users);
+    let messageReceived = getMessages(data.receiverId);
+
+    callback(messageReceived);
   });
 
-  socket.on("message", (data) => {
+  socket.on("createdMessage", (data) => {
     const message: Message = {
       id: data.id,
       senderId: data.senderId,
       receiverId: data.receiverId,
-      groupId: data.groupId,
       content: data.content,
       createdAt: new Date(),
     };
+    messages.push(message);
+    console.log("====================================");
+
+    console.log(message);
+    console.log("====================================");
 
     // messageModel.create(message, data.req, data.res);
-
-    if (data.group) io.to(data.groupId).emit("message", message);
-    else io.to(data.receiverId).emit("message", message);
+    io.to(data.receiverId).emit("newIncomingMessage", message);
   });
 });
+
+function getMessages(receiverId: string) {
+  let messagesReceived = messages.filter(
+    (message) => message.receiverId === receiverId
+  );
+
+  return messagesReceived;
+}
