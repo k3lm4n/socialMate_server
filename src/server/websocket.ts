@@ -1,7 +1,7 @@
 import { join } from "path";
 import { io } from ".";
 import { Message } from "../utils/types/@types";
-import MessageModel from "../models/message";
+import MessageModel from "../controllers/message";
 
 interface Room {
   id: string;
@@ -15,9 +15,9 @@ const messageModel = new MessageModel();
 const messages: Message[] = [];
 
 io.on("connection", (socket) => {
-  //   console.log("connected ", socket.id);
+
   socket.on("connectedOn", (data, callback) => {
-    // console.log(data);
+
 
     socket.join(data.receiverId);
 
@@ -36,7 +36,6 @@ io.on("connection", (socket) => {
         socketId: socket.id,
       });
     }
-    // console.log(users);
     let messageReceived = getMessages(data.receiverId);
 
     callback(messageReceived);
@@ -51,20 +50,19 @@ io.on("connection", (socket) => {
       createdAt: new Date(),
     };
     messages.push(message);
-    console.log("====================================");
 
-    console.log(message);
-    console.log("====================================");
 
-    // messageModel.create(message, data.req, data.res);
+
     io.to(data.receiverId).emit("newIncomingMessage", message);
   });
 });
 
 function getMessages(receiverId: string) {
-  let messagesReceived = messages.filter(
+  let messagesReceived: Message[] = messages.filter(
     (message) => message.receiverId === receiverId
   );
+
+
 
   return messagesReceived;
 }

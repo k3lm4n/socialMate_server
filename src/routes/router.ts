@@ -1,23 +1,24 @@
 import { Router } from "express";
 import userRoutes from "./user.routes";
 import postRoutes from "./post.routes";
-import groupRoutes from "./group.routes";
+import chatChannel from "./chatChannel.routes";
+import Chat from "./chat.routes";
 import categoryRoutes from "./category.routes";
 import commentRoutes from "./comment.routes";
 import authRoutes from "./auth.routes";
+import { ensureAuthenticated } from "../middleware/EnsureAuthenticated";
 
 const app = Router();
 
+app.use("/auth", authRoutes);
+app.use("/user", ensureAuthenticated, userRoutes);
 
-  app.use("/user", userRoutes);
-  app.use("/group", groupRoutes);
-  app.use("/post", postRoutes);
-  app.use("/category", categoryRoutes);
-  app.use("/comment", commentRoutes);
-  app.use("/auth", authRoutes);
+app.use("/chatChannel", ensureAuthenticated, chatChannel);
+app.use("/chat", ensureAuthenticated, Chat);
+app.use("/post", ensureAuthenticated, postRoutes);
+app.use("/category", ensureAuthenticated, categoryRoutes);
+app.use("/comment", ensureAuthenticated, commentRoutes);
 
-
-
-  // actulaizada
+// actulaizada
 
 export default app;

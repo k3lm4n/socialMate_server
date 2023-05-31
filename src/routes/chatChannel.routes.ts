@@ -1,5 +1,5 @@
 
-import GroupController from '../controllers/group';
+import GroupController from '../controllers/chatChannel';
 import { Router } from "express";
 
 

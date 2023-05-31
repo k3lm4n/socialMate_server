@@ -6,25 +6,34 @@ export const ensureAuthenticated: RequestHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  
-  const [auth, tokens]  = req.headers.authorization?.split(" ") as [string, string];
+  try {
+    const [auth, tokens] = String(req.headers.authorization).split(" ") as [] | [undefined, undefined];
+    const { tokens:accessToken } = req.cookies;
 
-  if (!auth || auth !== "Bearer")
-    return res.status(401).json({ message: "Token não encontrado" });
-  
-  if (!tokens) 
-    return res.status(401).json({ message: "Token não encontrado" });
+    console.log("====================================");
+    console.log(accessToken);
+    console.log("====================================");
 
-  const payload = JWTServices.verify(tokens);
+    if (!auth || auth !== "Bearer" && !accessToken)
+      return res.status(401).json({ message: "Falha na autenticação" });
 
-  if (payload === "JWT_SECRET_NOT_FOUND") {
-    return res.status(500).json({ message: "Erro ao verificar token" });
+    if (!tokens && !accessToken)
+      return res.status(401).json({ message: "Token não encontrado" });
+
+    const payload = JWTServices.verify(tokens || accessToken);
+
+    if (payload === "JWT_SECRET_NOT_FOUND") {
+      return res.status(500).json({ message: "Erro ao verificar token" });
+    }
+
+    if (payload === "INVALID_TOKEN") {
+      return res.status(401).json({ message: "Token inválido" });
+    }
+    console.log(payload);
+
+    return next();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error || "Erro" });
   }
-
-  if (payload === "INVALID_TOKEN") {
-    return res.status(401).json({ message: "Token inválido" });
-  }
-  console.log(payload);
-
-  return next();
 };

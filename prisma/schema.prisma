@@ -19,8 +19,8 @@ model User {
   birthdate DateTime?
   role      Role      @default(USER)
 
-  cretedGroups Group[]          @relation("creator")
-  groups       Group[]
+  cretedGroups ChatChannel[]    @relation("creator")
+  chatChannels ChatChannel[]
   attatchments Attatchment[]
   posts        Post[]           @relation("author")
   preferences  userPreferences?
@@ -33,6 +33,9 @@ model User {
 
   MessageSent   Message[] @relation("Sender")
   MessageRecive Message[] @relation("PrivateMessage")
+
+  chats   chat[]   @relation(fields: [chatIDs], references: [id])
+  chatIDs String[] @db.ObjectId
 
   createdAt DateTime @default(now())
 }
@@ -56,6 +59,22 @@ model userPreferences {
   phoneUpdates Boolean
   userId       String  @unique @db.ObjectId
   user         User    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model chat {
+  id   String  @id @default(auto()) @map("_id") @db.ObjectId
+  name String?
+
+  users   User[]   @relation(fields: [userIDs], references: [id])
+  userIDs String[] @db.ObjectId
+
+  messages Message[]
+
+  chatChannel   ChatChannel? @relation(fields: [chatChannelId], references: [id])
+  chatChannelId String?      @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -103,7 +122,7 @@ model Category {
   updatedAt DateTime @updatedAt
 }
 
-model Group {
+model ChatChannel {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
@@ -114,8 +133,7 @@ model Group {
 
   creator   User?   @relation("creator", fields: [creatorId], references: [id])
   creatorId String? @db.ObjectId
-
-  messages Message[]
+  chat      chat[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -144,20 +162,18 @@ model Blob {
   updatedAt DateTime @updatedAt
 }
 
-
-
 model Message {
-  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
   content String
 
   sender   User   @relation("Sender", fields: [senderId], references: [id])
   senderId String @db.ObjectId
 
-  group   Group?  @relation(fields: [groupId], references: [id])
-  groupId String? @db.ObjectId
-
   receiver   User?   @relation("PrivateMessage", fields: [receiverId], references: [id])
   receiverId String? @db.ObjectId
+
+  chat   chat?   @relation(fields: [chatId], references: [id])
+  chatId String? @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

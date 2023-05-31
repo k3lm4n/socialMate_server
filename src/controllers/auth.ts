@@ -22,7 +22,7 @@ class ControllerAuth {
           id: true,
           name: true,
           password: true,
-        }
+        },
       });
 
       if (!user) {
@@ -47,7 +47,7 @@ class ControllerAuth {
         httpOnly: true,
         secure: true,
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-        sameSite: "strict",
+        sameSite: "none",
       });
 
       const userReponse = {
@@ -55,7 +55,7 @@ class ControllerAuth {
         name: user.name,
         email: user.email,
         role: user.role,
-      }; 
+      };
 
       return res.status(200).json({ accessToken, userReponse });
     } catch (error: any) {
@@ -74,10 +74,9 @@ class ControllerAuth {
     res.status(200).json({ message: "Logout" });
   }
 
-  async me (req: Request, res: Response) {
-    
-    const { user_id } = ParserService(req.headers.authorization as string);
+  async me(req: Request, res: Response) {
     try {
+      const { user_id } = ParserService(req.headers.authorization as string);
       const user = await prisma.user.findUnique({
         where: {
           id: user_id,
@@ -87,7 +86,7 @@ class ControllerAuth {
           role: true,
           id: true,
           name: true,
-        }
+        },
       });
       res.status(200).json({ user });
     } catch (error: any) {
@@ -95,9 +94,6 @@ class ControllerAuth {
       return res.status(500).json({ message: error.message || "Erro" });
     }
   }
-
-
-
 }
 
 export default new ControllerAuth();
