@@ -15,9 +15,9 @@ const messageModel = new MessageModel();
 const messages: Message[] = [];
 
 io.on("connection", (socket) => {
-
+  //   console.log("connected ", socket.id);
   socket.on("connectedOn", (data, callback) => {
-
+    // console.log(data);
 
     socket.join(data.receiverId);
 
@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
         socketId: socket.id,
       });
     }
+    // console.log(users);
     let messageReceived = getMessages(data.receiverId);
 
     callback(messageReceived);
@@ -52,8 +53,8 @@ io.on("connection", (socket) => {
     messages.push(message);
 
 
-
-    io.to(data.receiverId).emit("newIncomingMessage", message);
+    // messageModel.create(message, data.req, data.res);
+    // io.to(data.receiverId).emit("newIncomingMessage", message);
   });
 });
 
@@ -61,8 +62,5 @@ function getMessages(receiverId: string) {
   let messagesReceived: Message[] = messages.filter(
     (message) => message.receiverId === receiverId
   );
-
-
-
   return messagesReceived;
 }
