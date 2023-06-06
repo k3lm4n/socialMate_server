@@ -3,7 +3,14 @@
 
 generator client {
   provider = "prisma-client-js"
+  // provider = "prisma-erd-generator"
 }
+
+// generator erd {
+//   provider = "prisma-erd-generator"
+//   output   = "./ERD.svg"
+//   erdDebug = true
+// }
 
 datasource db {
   provider = "mongodb"
@@ -11,13 +18,12 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String?
-  email     String    @unique
-  password  String
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  lastname String
+
   address   Address?
   birthdate DateTime?
-  role      Role      @default(USER)
 
   cretedGroups ChatChannel[]    @relation("creator")
   chatChannels ChatChannel[]
@@ -26,18 +32,33 @@ model User {
   preferences  userPreferences?
   Comment      Comment[]
 
-  followedBy    User[]   @relation("UserFollows", fields: [followedByIDs], references: [id])
-  followedByIDs String[] @db.ObjectId
-  following     User[]   @relation("UserFollows", fields: [followingIDs], references: [id])
-  followingIDs  String[] @db.ObjectId
+  interest      Category[]
+  followedBy    User[]     @relation("UserFollows", fields: [followedByIDs], references: [id])
+  followedByIDs String[]   @db.ObjectId
+  following     User[]     @relation("UserFollows", fields: [followingIDs], references: [id])
+  followingIDs  String[]   @db.ObjectId
 
   MessageSent   Message[] @relation("Sender")
   MessageRecive Message[] @relation("PrivateMessage")
+  login         Login?
 
   chats   chat[]   @relation(fields: [chatIDs], references: [id])
   chatIDs String[] @db.ObjectId
 
   createdAt DateTime @default(now())
+}
+
+model Login {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  username String @unique
+  email    String @unique
+  password String
+  role     Role   @default(USER)
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String @unique @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Address is an embedded document
@@ -65,14 +86,13 @@ model userPreferences {
 }
 
 model chat {
-  id   String  @id @default(auto()) @map("_id") @db.ObjectId
-  name String?
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
 
   users   User[]   @relation(fields: [userIDs], references: [id])
   userIDs String[] @db.ObjectId
 
-  messages Message[]
-
+  messages      Message[]
   chatChannel   ChatChannel? @relation(fields: [chatChannelId], references: [id])
   chatChannelId String?      @db.ObjectId
 
@@ -117,6 +137,20 @@ model Category {
 
   postIDs           String[] @db.ObjectId
   CategoriesOnPosts Post[]   @relation(fields: [postIDs], references: [id])
+  user              User?    @relation(fields: [userId], references: [id])
+  userId            String?  @db.ObjectId
+  subCategories     SubCategory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubCategory {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique
+
+  categoryIDs String @db.ObjectId
+  category    Category @relation(fields: [categoryIDs], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

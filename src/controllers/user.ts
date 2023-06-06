@@ -9,16 +9,21 @@ const prisma = new PrismaClient();
 class UserController {
   async register(req: Request, res: Response) {
     try {
-      const { name, email, password, birthdate } = registerSchema.parse(
-        req.body
-      );
+      const { name, email, password, birthdate, lastname, username } =
+        registerSchema.parse(req.body);
       const hash = await bcrypt.hash(password, 10);
       const user = await prisma.user.create({
         data: {
           name,
-          email,
-          password: hash,
+          lastname,
           birthdate,
+          login:{
+            create:{
+              email,
+              password:hash,
+              username
+            }
+          }
         },
       });
 
@@ -32,7 +37,7 @@ class UserController {
   async update(req: Request, res: Response) {
     const { id } = req.params;
     try {
-      const { name, email, address, role } = req.body;
+      const { name, lastname, email, address, role } = req.body;
       console.log(req.body);
       const user = await prisma.user.update({
         where: {
@@ -40,9 +45,13 @@ class UserController {
         },
         data: {
           name,
-          email,
           address,
-          role,
+          lastname,
+          login: {
+            update: {
+              email,
+            },
+          },
         },
       });
       res.status(200).json({ user });
@@ -60,7 +69,7 @@ class UserController {
           id,
         },
       });
-      res.status(200).json({ user });
+      res.status(202).json({ user });
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });

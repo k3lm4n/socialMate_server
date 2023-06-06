@@ -5,9 +5,8 @@ import { ParserService } from "../utils/ParserService";
 const prisma = new PrismaClient();
 
 class ChatController {
-
   async createChat(req: Request, res: Response) {
-    const {userIds} = req.body;
+    const { userIds } = req.body;
     const name = req.body.name;
 
     try {
@@ -48,14 +47,32 @@ class ChatController {
   }
 
   async getAllByUser(req: Request, res: Response) {
-    const { user_id } = ParserService(req.headers.authorization as string);
+    const { user_id } = ParserService(
+      (req.headers.authorization as string) || req.cookies.tokens
+    );
+
+    console.log("====================================");
+    console.log(user_id);
+    console.log("====================================");
 
     try {
       const chat = await prisma.chat.findMany({
         where: {
+          userIDs: {
+            hasSome: user_id,
+          },
+        },
+        select: {
+          id: true,
           users: {
-            some: {
-              id: user_id,
+            select: {
+              id: true,
+              name: true,
+              login:{
+                select:{
+                  
+                }
+              }
             },
           },
         },
@@ -86,14 +103,19 @@ class ChatController {
           id,
         },
       });
-      res.status(200).json({ chat });
+      res.status(204).json({ chat });
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
     }
   }
+
+  async getById(req: Request, res: Response) {
+    try {
+    } catch (error) {
+      
+    }
+  }
 }
 
-
-
-export default ChatController
+export default ChatController;

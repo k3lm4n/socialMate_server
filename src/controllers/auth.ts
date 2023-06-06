@@ -12,7 +12,7 @@ class ControllerAuth {
     const { email, password } = loginSchema.parse(req.body);
 
     try {
-      const user = await prisma.user.findUnique({
+      const user = await prisma.login.findUnique({
         where: {
           email: email,
         },
@@ -20,8 +20,13 @@ class ControllerAuth {
           email: true,
           role: true,
           id: true,
-          name: true,
           password: true,
+          user: {
+            select: {
+              name: true,
+              lastname: true,
+            },
+          },
         },
       });
 
@@ -52,15 +57,17 @@ class ControllerAuth {
 
       const userReponse = {
         id: user.id,
-        name: user.name,
+        name: user.user.name,
+        lastname: user.user.lastname,
         email: user.email,
         role: user.role,
       };
 
       return res.status(200).json({ accessToken, userReponse });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ message: error.message || "Erro" });
+    } catch (error) {
+      return res.json().status(500);
+      // console.log(error);
+      // return res.status(500).json({ message: error.message || "Erro" });
     }
   }
 
@@ -76,16 +83,21 @@ class ControllerAuth {
 
   async me(req: Request, res: Response) {
     try {
-      const { user_id } = ParserService(req.headers.authorization as string);
+      const { user_id } = ParserService(
+        (req.headers.authorization as string) || req.cookies.tokens
+      );
       const user = await prisma.user.findUnique({
         where: {
           id: user_id,
         },
         select: {
-          email: true,
-          role: true,
           id: true,
           name: true,
+          login: {
+            select: {
+              username: true,
+            },
+          },
         },
       });
       res.status(200).json({ user });

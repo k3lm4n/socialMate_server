@@ -7,8 +7,11 @@ interface IJWTPayload {
 }
 
 export const ParserService = (token: string) => {
-
-  const [bearer, tokenValue] = token.split(" ");
+  let bearer = "";
+  let tokenValue = "";
+  if (token.includes("Bearer")) {
+    [bearer, tokenValue] = token.split(" ");
+  } else tokenValue = token;
 
   const payload = JWTServices.verify(tokenValue) as IJWTPayload;
   return payload;

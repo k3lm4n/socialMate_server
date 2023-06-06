@@ -2,6 +2,12 @@ import z from "zod";
 
 export const registerSchema = z.object({
   name: z.string().min(3, { message: "Name must be at least 3 characters" }),
+  lastname: z
+    .string()
+    .min(3, { message: "Name must be at least 3 characters" }),
+  username: z
+    .string()
+    .min(5, { message: "Name must be at least 5 characters" }),
   email: z
     .string()
     .email({ message: "Email must be valid" })
@@ -19,6 +25,14 @@ export const updateSchema = z.object({
     .string()
     .min(3, { message: "Name must be at least 3 characters" })
     .optional(),
+  lastname: z
+    .string()
+    .min(3, { message: "Name must be at least 3 characters" })
+    .optional(),
+  username: z
+    .string()
+    .min(5, { message: "Name must be at least 5 characters" }),
+
   email: z.string().email({ message: "Email must be valid" }).optional(),
   address: z
     .string()
