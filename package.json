@@ -56,5 +56,8 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }

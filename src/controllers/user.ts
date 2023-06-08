@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { registerSchema } from "../utils/validator/user";
+import { registerSchema } from "../utils/validator/auth";
 import { stringify } from "querystring";
 
 const prisma = new PrismaClient();
@@ -9,25 +9,67 @@ const prisma = new PrismaClient();
 class UserController {
   async register(req: Request, res: Response) {
     try {
-      const { name, email, password, birthdate, lastname, username } =
-        registerSchema.parse(req.body);
+      const {
+        name,
+        email,
+        password,
+        birthdate,
+        lastname,
+        username,
+        interest,
+        degree,
+        address,
+        course,
+        phone,
+      } = registerSchema.parse(req.body);
+
+      const likedIntersted = interest?.map((item) => {
+        return {
+          sigle: item.value,
+        };
+      });
+
+      console.log("====================================");
+      console.log(likedIntersted);
+      console.log("====================================");
+
       const hash = await bcrypt.hash(password, 10);
       const user = await prisma.user.create({
         data: {
           name,
           lastname,
-          birthdate,
-          login:{
-            create:{
+          birthdate: new Date(birthdate),
+          course: {
+            connect: {
+              sigle: course,
+            },
+          },
+          interest: {
+            connect: likedIntersted,
+          },
+          degree: degree || "",
+          address: {
+            city: address?.split(",")[0] || "",
+            state: address?.split(",")[1] || "",
+            street: address?.split(",")[2] || "",
+            zip: address?.split(",")[3] || `00000-000`,
+          },
+          preferences: {
+            create: {},
+          },
+          login: {
+            create: {
               email,
-              password:hash,
-              username
-            }
-          }
+              password: hash,
+              username,
+              phone,
+            },
+          },
         },
       });
 
-      res.status(201).json({ user });
+      return res.status(201).json({ user });
+      // return res.status(201).json({ message: "User created" });
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
