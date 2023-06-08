@@ -1,5 +1,5 @@
 
 
-class ZodError extends Error {
-    issues: ZodIssue[];
-  }
+// class ZodError extends Error {
+//     issues: ZodIssue[];
+//   }

@@ -4,20 +4,20 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 class CategoryController {
-  async create(req: Request, res: Response) {
-    try {
-      const { name } = req.body;
-      const category = await prisma.category.create({
-        data: {
-          name,
-        },
-      });
-      res.status(200).json({ category });
-    } catch (error: any) {
-      console.log(error);
-      return res.status(500).json({ message: error.message || "Erro" });
-    }
-  }
+  // async create(req: Request, res: Response) {
+  //   try {
+  //     const { name } = req.body;
+  //     const category = await prisma.category.create({
+  //       data: {
+  //         name,
+  //       },
+  //     });
+  //     res.status(200).json({ category });
+  //   } catch (error: any) {
+  //     console.log(error);
+  //     return res.status(500).json({ message: error.message || "Erro" });
+  //   }
+  // }
 
   async update(req: Request, res: Response) {
     try {
