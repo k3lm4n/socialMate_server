@@ -23,6 +23,7 @@ class ControllerAuth {
           password: true,
           user: {
             select: {
+              id: true,
               name: true,
               lastname: true,
             },
@@ -40,7 +41,7 @@ class ControllerAuth {
         return res.status(401).json({ message: "Senha incorreta" });
       }
       const accessToken = JWTServices.sign({
-        user_id: user.id,
+        user_id: user.user.id,
         email: user.email,
         role: user.role,
       });

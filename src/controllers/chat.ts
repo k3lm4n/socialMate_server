@@ -70,7 +70,7 @@ class ChatController {
               name: true,
               login:{
                 select:{
-                  
+                  username: true,
                 }
               }
             },
