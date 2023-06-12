@@ -16,7 +16,7 @@ app.use("/user", userRoutes);
 app.use("/chatChannel", ensureAuthenticated, chatChannel);
 app.use("/chat", ensureAuthenticated, Chat);
 app.use("/post", ensureAuthenticated, postRoutes);
-app.use("/category", ensureAuthenticated, categoryRoutes);
+app.use("/category", categoryRoutes);
 app.use("/comment", ensureAuthenticated, commentRoutes);
 
 // actulaizada

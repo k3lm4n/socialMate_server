@@ -31,6 +31,7 @@ class CategoryController {
           name,
         },
       });
+
       res.status(200).json({ category });
     } catch (error: any) {
       console.log(error);
@@ -55,8 +56,40 @@ class CategoryController {
 
   async index(req: Request, res: Response) {
     try {
-      const categories = await prisma.category.findMany();
-      res.status(200).json({ categories });
+      const categories = await prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+          subCategories: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      const mappedCategories = categories.map((category) => {
+        return {
+          value: category.id,
+          label: category.name,
+          options: category.subCategories.map((subCategory) => {
+            return {
+              value: subCategory.id,
+              label: subCategory.name,
+            };
+          }),
+        };
+      });
+
+      const courses = categories.map((category) => {
+        return {
+          value: category.id,
+          label: category.name,
+        };
+      });
+
+      res.status(200).json({ mappedCategories, courses });
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
@@ -80,6 +113,5 @@ class CategoryController {
     }
   }
 }
-
 
 export default CategoryController;

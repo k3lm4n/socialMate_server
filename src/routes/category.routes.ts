@@ -3,16 +3,15 @@ import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
+import CategoryController from "../controllers/category";
 
 const routes = Router();
 const prisma = new PrismaClient();
+const categoryController = new CategoryController();
 
 dotenv.config();
 
-routes.route("/").get(async (req, res) => {
-  const categories = await prisma.category.findMany();
-    res.status(200).json({categories});
-});
+routes.get("/", categoryController.index);
 
 routes.get("/:id", async (req, res) => {
   const { id } = req.params;

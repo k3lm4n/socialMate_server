@@ -23,12 +23,12 @@ class UserController {
         phone,
       } = registerSchema.parse(req.body);
 
-      const likedIntersted = interest?.map((item) => {
-        return {
-          sigle: item.value,
-        };
-      });
-
+      const likedIntersted =
+        interest?.map((item) => {
+          return {
+            id: item.value,
+          };
+        }) || null;
       console.log("====================================");
       console.log(likedIntersted);
       console.log("====================================");
@@ -41,11 +41,11 @@ class UserController {
           birthdate: new Date(birthdate),
           course: {
             connect: {
-              sigle: course,
+              id: course,
             },
           },
           interest: {
-            connect: likedIntersted,
+            connect: likedIntersted || undefined,
           },
           degree: degree || "",
           address: {
