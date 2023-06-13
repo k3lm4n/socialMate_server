@@ -7,20 +7,19 @@ export const ensureAuthenticated: RequestHandler = (
   next: NextFunction
 ) => {
   try {
-    const [auth, tokens] = String(req.headers.authorization).split(" ") as [] | [undefined, undefined];
-    const { tokens:accessToken } = req.cookies;
+    const [auth, tokens] = String(req.headers.authorization).split(" ") as
+      | []
+      | [undefined, undefined];
+    const { tokens: accessToken } = req.cookies;
 
-    console.log("====================================");
-    console.log(accessToken);
-    console.log("====================================");
 
-    if (!auth || auth !== "Bearer" && !accessToken)
+    if (!auth || (auth !== "Bearer" && !accessToken))
       return res.status(401).json({ message: "Falha na autenticação" });
 
     if (!tokens && !accessToken)
       return res.status(401).json({ message: "Token não encontrado" });
 
-    const payload = JWTServices.verify(tokens || accessToken);
+    const payload = JWTServices.verify(tokens ?? accessToken);
 
     if (payload === "JWT_SECRET_NOT_FOUND") {
       return res.status(500).json({ message: "Erro ao verificar token" });
@@ -34,6 +33,6 @@ export const ensureAuthenticated: RequestHandler = (
     return next();
   } catch (error: any) {
     console.log(error);
-    return res.status(500).json({ message: error || "Erro" });
+    return res.status(500).json({ message: error ?? "Erro" });
   }
 };

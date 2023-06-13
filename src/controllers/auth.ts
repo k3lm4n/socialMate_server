@@ -9,9 +9,9 @@ const prisma = new PrismaClient();
 
 class ControllerAuth {
   async login(req: Request, res: Response) {
-    const { email, password } = loginSchema.parse(req.body);
-
     try {
+      const { email, password } = loginSchema.parse(req.body);
+
       const user = await prisma.login.findUnique({
         where: {
           email: email,
@@ -63,10 +63,9 @@ class ControllerAuth {
         email: user.email,
         role: user.role,
       };
-
       return res.status(200).json({ accessToken, userReponse });
-    } catch (error) {
-      return res.json().status(500);
+    } catch (error: any) {
+      return res.status(500).json(error.message);
       // console.log(error);
       // return res.status(500).json({ message: error.message || "Erro" });
     }
@@ -84,6 +83,10 @@ class ControllerAuth {
 
   async me(req: Request, res: Response) {
     try {
+      console.log("====================================");
+      console.log("Auth: ", req.headers.authorization);
+      console.log("Inside Cookies:", req.cookies.tokens);
+      console.log("====================================");
       const { user_id } = ParserService(
         (req.headers.authorization as string) || req.cookies.tokens
       );
