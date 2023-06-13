@@ -17,17 +17,27 @@ const server = http.createServer(app);
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(
-//   cors({
-//     credentials: true,
-//     origin: "*",
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   })
-// );
+
+/** Rules of our API */
+app.use(
+  cors({
+    credentials: true,
+    origin: ["http://localhost:3030", "https://social.oowl.tech"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+      "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Credentials",
+    ],
+  })
+);
 
 app.set("trust proxy", 1); // trust first proxy
-
-/** Only Start Server if Mongoose Connects */
 
 /** Log the request */
 app.use((req, res, next) => {
@@ -49,26 +59,6 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-/** Rules of our API */
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Origin", [
-    "http://localhost:3000/",
-    "https://social.oowl.tech/",
-  ]);
-  // res.header(
-  //   "Access-Control-Allow-Headers",
-  //   "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials"
-  // );
-
-  if (req.method == "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
-    return res.status(200).json({});
-  }
-
-  next();
-});
-
 /** Routes */
 app.use("/api", masterRoutes);
 
@@ -86,6 +76,11 @@ app.use((req, res, next) => {
   });
 });
 
-const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, {
+  cors: {
+    credentials: true,
+    origin: ["http://localhost:3030", "https://social.oowl.tech"],
+  },
+});
 
 export { server, io };
