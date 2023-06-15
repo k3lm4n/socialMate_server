@@ -20,7 +20,7 @@ const verify = (token: string) => {
       return decoded;
     }
     return decoded as IJWTPayload;
-  } catch (error) {
+  } catch (error:any) {
     console.log(error);
     return "INVALID_TOKEN";
   }

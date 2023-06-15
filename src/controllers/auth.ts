@@ -65,9 +65,8 @@ class ControllerAuth {
       };
       return res.status(200).json({ accessToken, userReponse });
     } catch (error: any) {
-      return res.status(500).json(error.message);
-      // console.log(error);
-      // return res.status(500).json({ message: error.message || "Erro" });
+      console.log(error);
+      return res.status(500).json({ message: error.message || "Erro" });
     }
   }
 
@@ -83,10 +82,7 @@ class ControllerAuth {
 
   async me(req: Request, res: Response) {
     try {
-      console.log("====================================");
-      console.log("Auth: ", req.headers.authorization);
-      console.log("Inside Cookies:", req.cookies.tokens);
-      console.log("====================================");
+
       const { user_id } = ParserService(
         (req.headers.authorization as string) || req.cookies.tokens
       );

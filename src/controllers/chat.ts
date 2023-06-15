@@ -6,10 +6,10 @@ const prisma = new PrismaClient();
 
 class ChatController {
   async createChat(req: Request, res: Response) {
-    const { userIds } = req.body;
-    const name = req.body.name;
-
     try {
+      const { userIds } = req.body;
+      const name = req.body.name;
+
       const chatChannel = await prisma.chat.create({
         data: {
           users: {
@@ -47,15 +47,10 @@ class ChatController {
   }
 
   async getAllByUser(req: Request, res: Response) {
-    const { user_id } = ParserService(
-      (req.headers.authorization as string) || req.cookies.tokens
-    );
-
-    console.log("====================================");
-    console.log(user_id);
-    console.log("====================================");
-
     try {
+      const { user_id } = ParserService(
+        (req.headers.authorization as string) || req.cookies.tokens
+      );
       const chat = await prisma.chat.findMany({
         where: {
           userIDs: {
@@ -68,11 +63,11 @@ class ChatController {
             select: {
               id: true,
               name: true,
-              login:{
-                select:{
+              login: {
+                select: {
                   username: true,
-                }
-              }
+                },
+              },
             },
           },
         },
@@ -88,6 +83,24 @@ class ChatController {
   async getAll(req: Request, res: Response) {
     try {
       const chat = await prisma.chat.findMany({});
+      return res.json(chat).status(200);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ message: error || "Erro" });
+    }
+  }
+
+  async getAllOnChannel(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+
+      const chat = await prisma.chat.findMany({
+        where: {
+          chatChannelId: {
+            equals: id,
+          },
+        },
+      });
       return res.json(chat).status(200);
     } catch (error: any) {
       console.log(error);
@@ -112,9 +125,7 @@ class ChatController {
 
   async getById(req: Request, res: Response) {
     try {
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 }
 

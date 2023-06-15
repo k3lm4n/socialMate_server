@@ -7,7 +7,10 @@ const chatController = new ChatController();
 
 
 routes.get("/", chatController.getAll);
-routes.get("/byUser", chatController.getAllByUser);
+
+routes.get("/byUser/", chatController.getAllByUser);
+
+routes.get("/chatsOnChannel/:id", chatController.getAllOnChannel);
 
 routes.delete("/:id", chatController.delete);
 
