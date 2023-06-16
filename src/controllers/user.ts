@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { registerSchema } from "../utils/validator/auth";
 import { stringify } from "querystring";
+import { ParserService } from "../utils/ParserService";
 
 const prisma = new PrismaClient();
 
@@ -120,8 +121,42 @@ class UserController {
 
   async getAll(req: Request, res: Response) {
     try {
-      const users = await prisma.user.findMany();
-      res.status(200).json({ users });
+      const users = await prisma.user.findMany({
+        where: {
+          id: {
+            not: ParserService(req.cookies.tokens).user_id,
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          lastname: true,
+          course: {
+            select: {
+              sigle: true,
+              name: true,
+            },
+          },
+          degree: true,
+          login: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      });
+
+      const mappedUsers = users.map((user) => {
+        return {
+          id: user.id,
+          name: `${user.name} ${user.lastname}`,
+          username: user.login?.username,
+          course: user.course?.sigle,
+          degree: user.degree,
+        };
+      });
+
+      res.status(200).json(mappedUsers);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });

@@ -31,4 +31,20 @@ export const chatChannel = z.object({
   private: z.boolean().optional(),
 });
 
+
+export const chatSchema = z.object({
+    name: z.string().min(3, { message: "Name must be at least 3 characters" }).optional(),
+    description: 
+        z.string()
+        .min(10, { message: "Description must be at least 10 characters" })
+        .optional(),
+    members: z.array(z.string()).min(1, { message: "Members must be at least 1" }).optional(),
+    channel: z.string().min(1, { message: "Channel must be Selected one" }).optional(),
+    avatar: z.string().min(1, { message: "" }).optional(),
+})
+
+
+
+
+export type ChatType = z.infer<typeof chatSchema>;
 export type ChatChannelType = z.infer<typeof chatChannel>;

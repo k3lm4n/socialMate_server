@@ -39,7 +39,7 @@ class GroupController {
       const Channel = await prisma.chatChannel.create({
         data: {
           name,
-          description,
+          description: description || "Principal",
           category: {
             connect: {
               id: category,
@@ -221,7 +221,7 @@ class GroupController {
           },
         },
       });
-      res.status(200).json({ chatChannel });
+      res.status(200).json(chatChannel);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });

@@ -1,27 +1,57 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { ParserService } from "../utils/ParserService";
+import { chatSchema } from "../utils/validator/chatChannel";
 
 const prisma = new PrismaClient();
 
 class ChatController {
   async createChat(req: Request, res: Response) {
     try {
-      const { userIds } = req.body;
-      const name = req.body.name;
+      const { members, channel, name, description } = chatSchema.parse(
+        req.body
+      );
+      if (members) {
+        members.push(ParserService(req.cookies.tokens).user_id);
 
-      const chatChannel = await prisma.chat.create({
-        data: {
-          users: {
-            connect: userIds.map((id: number) => ({
-              id,
-            })),
+        const exist_chat = await prisma.chat.findMany({
+          where: {
+            AND: [
+              {
+                userIDs: {
+                  hasEvery: members,
+                },
+              },
+            ],
           },
-          name: userIds.length > 2 ? name : null,
+        });
+        if (exist_chat.length > 0) {
+          return res.status(200).json({ message: "Chat já existe!" });
+        }
+      }
+
+      const chat = await prisma.chat.create({
+        data: {
+          members: members
+            ? {
+                connect: members.map((id: string) => ({
+                  id,
+                })),
+              }
+            : undefined,
+          name: !members ? name : "Private Chat",
+          description,
+          chatChannel: channel
+            ? {
+                connect: {
+                  id: channel,
+                },
+              }
+            : undefined,
         },
       });
 
-      res.status(201).json({ chatChannel });
+      return res.status(201).json(chat);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
@@ -59,13 +89,25 @@ class ChatController {
         },
         select: {
           id: true,
-          users: {
+          members: {
             select: {
               id: true,
               name: true,
+              lastname: true,
+              degree: true,
+              course: {
+                select: {
+                  name: true,
+                },
+              },
               login: {
                 select: {
                   username: true,
+                },
+              },
+              interest: {
+                select: {
+                  name: true,
                 },
               },
             },
@@ -73,7 +115,21 @@ class ChatController {
         },
       });
 
-      return res.json(chat).status(200);
+      const chatMapped = chat.map((chat) => {
+        const members = chat.members.filter(
+          (member) => member.id !== user_id
+        )[0];
+        return {
+          id: chat.id,
+          name: members.name + " " + members.lastname,
+          username: members.login?.username,
+          course: members.course?.name,
+          degree: members.degree,
+          interest: members.interest?.map((item) => item.name),
+        };
+      });
+
+      return res.status(200).json(chatMapped);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
@@ -83,7 +139,7 @@ class ChatController {
   async getAll(req: Request, res: Response) {
     try {
       const chat = await prisma.chat.findMany({});
-      return res.json(chat).status(200);
+      return res.status(200).json(chat);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error || "Erro" });
@@ -101,7 +157,7 @@ class ChatController {
           },
         },
       });
-      return res.json(chat).status(200);
+      return res.status(200).json(chat);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error || "Erro" });
