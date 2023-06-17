@@ -78,7 +78,7 @@ app.use((req, res, next) => {
 
 const io = new Server(server, {
   cors: {
-    // credentials: true,
+    credentials: true,
     origin: ["http://localhost:3030", "https://social.oowl.tech"],
   },
 });
