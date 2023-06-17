@@ -11,7 +11,7 @@ import { ensureAuthenticated } from "../middleware/EnsureAuthenticated";
 const app = Router();
 
 app.use("/auth", authRoutes);
-app.use("/user", ensureAuthenticated, userRoutes);
+app.use("/user", userRoutes);
 
 app.use("/chatChannel", ensureAuthenticated, chatChannel);
 app.use("/chat", ensureAuthenticated, Chat);
