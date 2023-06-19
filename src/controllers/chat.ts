@@ -30,6 +30,43 @@ class ChatController {
         }
       }
 
+      if (channel) {
+        const getMembers = await prisma.chatChannel.findUnique({
+          where: {
+            id: channel,
+          },
+          select: {
+            members: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+        const mapMembers = getMembers?.members.map((data) => {
+          return data;
+        });
+        if (mapMembers) {
+          const chatForChannel = await prisma.chat.create({
+            data: {
+              name: name,
+              description,
+              chatChannel: {
+                connect: {
+                  id: channel,
+                },
+              },
+              members: {
+                connect: mapMembers.map((data) => ({
+                  id: data.id,
+                })),
+              },
+            },
+          });
+          return res.status(201).json(chatForChannel);
+        }
+      }
       const chat = await prisma.chat.create({
         data: {
           members: members
@@ -172,7 +209,7 @@ class ChatController {
           id,
         },
       });
-      res.status(204).json({ chat });
+      return res.status(204).json({ chat });
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
@@ -181,7 +218,18 @@ class ChatController {
 
   async getById(req: Request, res: Response) {
     try {
-    } catch (error) {}
+      const { id } = req.params;
+      const data = await prisma.chat.findUnique({
+        where: {
+          id,
+        },
+      });
+      console.log(data);
+      return res.status(200).json(data);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ message: error.message || "Erro" });
+    }
   }
 }
 

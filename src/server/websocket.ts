@@ -52,7 +52,6 @@ io.on("connection", (socket) => {
     };
     messages.push(message);
 
-
     // messageModel.create(message, data.req, data.res);
     // io.to(data.receiverId).emit("newIncomingMessage", message);
   });
