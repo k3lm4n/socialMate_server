@@ -22,7 +22,11 @@ app.use(express.json());
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:3030", "https://social.oowl.tech"],
+    origin: [
+      "http://localhost:3030",
+      "https://social.oowl.tech",
+      "http://localhost:3000",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
@@ -79,7 +83,11 @@ app.use((req, res, next) => {
 const io = new Server(server, {
   cors: {
     credentials: true,
-    origin: ["http://localhost:3030", "https://social.oowl.tech"],
+    origin: [
+      "http://localhost:3030",
+      "https://social.oowl.tech",
+      "http://localhost:3000",
+    ],
   },
 });
 
