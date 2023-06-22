@@ -6,6 +6,7 @@ import Chat from "./chat.routes";
 import categoryRoutes from "./category.routes";
 import commentRoutes from "./comment.routes";
 import authRoutes from "./auth.routes";
+import searchController from "../controllers/search.controller";
 import { ensureAuthenticated } from "../middleware/EnsureAuthenticated";
 
 const app = Router();
@@ -18,6 +19,7 @@ app.use("/chat", ensureAuthenticated, Chat);
 app.use("/post", ensureAuthenticated, postRoutes);
 app.use("/category", categoryRoutes);
 app.use("/comment", ensureAuthenticated, commentRoutes);
+app.get("/search", searchController.search);
 
 // actulaizada
 

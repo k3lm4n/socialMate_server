@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
-import { chatChannel } from "../utils/validator/chatChannel";
+import { AddMembersSchema, chatChannel } from "../utils/validator/chatChannel";
 import { ParserService } from "../utils/ParserService";
 
 const prisma = new PrismaClient();
@@ -221,7 +221,26 @@ class GroupController {
           },
         },
       });
-      res.status(200).json(chatChannel);
+
+      const mapChannel = {
+        id: chatChannel?.id,
+        name: chatChannel?.name,
+        description: chatChannel?.description,
+        avatar: chatChannel?.avatar,
+        members: chatChannel?.members.map((member) => {
+          return {
+            id: member.id,
+            name: member.name + " " + member.lastname,
+            avatar: member.avatar,
+          };
+        }),
+        creator: {
+          id: chatChannel?.creator?.id,
+          name:
+            chatChannel?.creator?.name + " " + chatChannel?.creator?.lastname,
+        },
+      };
+      res.status(200).json(mapChannel);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
@@ -230,17 +249,22 @@ class GroupController {
 
   async join(req: Request, res: Response) {
     try {
-      const { id } = req.params;
-      const { userId } = req.body;
+      const { members, channel } = AddMembersSchema.parse(req.body);
+
+      const userId =
+        members?.map((item) => {
+          return {
+            id: item.value,
+          };
+        }) ?? undefined;
+
       const chatChannel = await prisma.chatChannel.update({
         where: {
-          id,
+          id: channel,
         },
         data: {
           members: {
-            connect: {
-              id: userId,
-            },
+            connect: userId,
           },
         },
       });

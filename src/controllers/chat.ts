@@ -120,9 +120,16 @@ class ChatController {
       );
       const chat = await prisma.chat.findMany({
         where: {
-          userIDs: {
-            hasSome: user_id,
-          },
+          AND: [
+            {
+              userIDs: {
+                hasSome: user_id,
+              },
+              name: {
+                equals: "Private Chat",
+              },
+            },
+          ],
         },
         select: {
           id: true,

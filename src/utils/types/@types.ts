@@ -2,9 +2,7 @@ export interface Message {
   id: string;
   content: string;
   senderId: string;
-  receiverId?: string;
-  groupId?: string;
-  createdAt: Date;
+  chatId: string;
 }
 
 export interface User {

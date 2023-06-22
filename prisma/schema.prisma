@@ -39,9 +39,8 @@ model User {
   following     User[]        @relation("UserFollows", fields: [followingIDs], references: [id])
   followingIDs  String[]      @db.ObjectId
 
-  MessageSent   Message[] @relation("Sender")
-  MessageRecive Message[] @relation("PrivateMessage")
-  login         Login?
+  MessageSent Message[]
+  login       Login?
 
   chats   chat[]   @relation(fields: [chatIDs], references: [id])
   chatIDs String[] @db.ObjectId
@@ -92,9 +91,8 @@ model chat {
   name        String?
   description String?
 
-  members   User[]   @relation(fields: [userIDs], references: [id])
-  userIDs String[] @db.ObjectId
-
+  members       User[]       @relation(fields: [userIDs], references: [id])
+  userIDs       String[]     @db.ObjectId
   messages      Message[]
   chatChannel   ChatChannel? @relation(fields: [chatChannelId], references: [id])
   chatChannelId String?      @db.ObjectId
@@ -220,14 +218,11 @@ model Message {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
   content String
 
-  sender   User   @relation("Sender", fields: [senderId], references: [id])
+  sender   User   @relation(fields: [senderId], references: [id])
   senderId String @db.ObjectId
 
-  receiver   User?   @relation("PrivateMessage", fields: [receiverId], references: [id])
-  receiverId String? @db.ObjectId
-
-  chat   chat?   @relation(fields: [chatId], references: [id])
-  chatId String? @db.ObjectId
+  chat   chat   @relation(fields: [chatId], references: [id])
+  chatId String @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
