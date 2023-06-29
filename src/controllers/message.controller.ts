@@ -1,20 +1,22 @@
+import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { Message } from "../utils/types/@types";
+import { ParserService } from "../utils/ParserService";
+import { io } from "../server";
 
 const prisma = new PrismaClient();
 
-class MessageModel {
-  async messaging(message: Message) {
+class MessageController {
+  async messaging(req: Request, res: Response) {
+    const message: Message = req.body;
+    const user_id = ParserService(req.cookies.tokens).user_id;
     try {
-      console.log("====================================");
-      console.log("Mensagem:", message);
-      console.log("====================================");
       const chatChannel = await prisma.message.create({
         data: {
           content: message.content,
           sender: {
             connect: {
-              id: message.senderId,
+              id: user_id,
             },
           },
           chat: {
@@ -25,22 +27,21 @@ class MessageModel {
         },
       });
 
-      console.log("====================================");
-      console.log("send Mensagem:",chatChannel);
-      console.log("====================================");
-      return chatChannel;
+      io.to(message.chatId).emit("newIncomingMessage", chatChannel);
+      return res.status(201).json(chatChannel);
     } catch (error: any) {
       console.log(error);
-      return false;
+      return res.status(400).json({ error: error.message });
     }
   }
 
-  async getAll(chatID: string) {
+  async getAll(req: Request, res: Response) {
     try {
+      const { chatId } = req.params;
       const messages = await prisma.message.findMany({
         where: {
           chatId: {
-            equals: chatID,
+            equals: chatId,
           },
         },
         select: {
@@ -48,6 +49,7 @@ class MessageModel {
           content: true,
           sender: {
             select: {
+              id: true,
               name: true,
               lastname: true,
             },
@@ -64,17 +66,18 @@ class MessageModel {
         return {
           id: data.id,
           content: data.content,
+          senderId: data.sender.id,
           sender: data.sender.name + " " + data.sender.lastname,
           chatId: data.chat?.id,
         };
       });
 
-      return mapMessages;
+      return res.status(200).json(mapMessages);
     } catch (error: any) {
       console.log(error);
-      return false;
+      return res.status(400).json({ error: error.message });
     }
   }
 }
 
-export default MessageModel;
+export default MessageController;

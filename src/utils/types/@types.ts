@@ -18,3 +18,10 @@ export interface Group {
   users: User[];
   messages: Message[];
 }
+
+export interface Room {
+  id: string;
+  senderId: string;
+  chatId?: string;
+  socketId: string;
+}

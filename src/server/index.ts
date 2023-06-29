@@ -3,6 +3,8 @@ import cookieParser from "cookie-parser";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
+import logger from "morgan";
+// import "../model/mongodb";
 
 import { Server } from "socket.io";
 
@@ -14,6 +16,7 @@ const app = express();
 
 const server = http.createServer(app);
 
+app.use(logger("dev"));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
