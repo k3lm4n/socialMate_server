@@ -4,7 +4,6 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
 // import logger from "morgan";
-// import "../model/mongodb";
 
 import { Server } from "socket.io";
 
