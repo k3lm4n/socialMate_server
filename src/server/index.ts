@@ -32,11 +32,11 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
+      "Origin",
+      "Accept",
       "Content-Type",
       "Authorization",
       "X-Requested-With",
-      "Accept",
-      "Origin",
       "Access-Control-Allow-Headers",
       "Access-Control-Allow-Origin",
       "Access-Control-Allow-Credentials",
@@ -45,6 +45,32 @@ app.use(
 );
 
 app.set("trust proxy", 1); // trust first proxy
+
+/** Rules of our API */
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "http://localhost:3030",
+    "https://www.social.oowl.tech/",
+    "https://social.oowl.tech/",
+    "http://localhost:3000",
+  ];
+  const origin = req.headers.origin as string;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+
+  if (req.method == "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
+    return res.status(200).json({});
+  }
+
+  next();
+});
 
 /** Log the request */
 app.use((req, res, next) => {
