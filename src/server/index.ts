@@ -25,21 +25,22 @@ app.use(
   cors({
     origin: [
       "http://localhost:3030",
+      "https://www.social.oowl.tech/",
       "https://social.oowl.tech/",
       "http://localhost:3000",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    // allowedHeaders: [
-    //   "Content-Type",
-    //   "Authorization",
-    //   "X-Requested-With",
-    //   "Accept",
-    //   "Origin",
-    //   "Access-Control-Allow-Headers",
-    //   "Access-Control-Allow-Origin",
-    //   "Access-Control-Allow-Credentials",
-    // ],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+      "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Origin",
+      "Access-Control-Allow-Credentials",
+    ],
   })
 );
 
@@ -86,6 +87,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:3030",
+      "https://www.social.oowl.tech/",
       "https://social.oowl.tech/",
       "http://localhost:3000",
     ],
