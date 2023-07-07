@@ -8,21 +8,23 @@ import commentRoutes from "./comment.routes";
 import authRoutes from "./auth.routes";
 import messageRoutes from "./message.routes";
 import searchController from "../controllers/search.controller";
+import fileRoutes from "./files.routes";
 import { ensureAuthenticated } from "../middleware/EnsureAuthenticated";
 
-const app = Router();
+const router = Router();
 
-app.use("/auth", authRoutes);
-app.use("/user", userRoutes);
+router.use("/auth", authRoutes);
+router.use("/user", userRoutes);
 
-app.use("/chatChannel", ensureAuthenticated, chatChannel);
-app.use("/chat", ensureAuthenticated, Chat);
-app.use("/message", ensureAuthenticated, messageRoutes);
-app.use("/post", ensureAuthenticated, postRoutes);
-app.use("/category", categoryRoutes);
-app.use("/comment", ensureAuthenticated, commentRoutes);
-app.get("/search", searchController.search);
+router.use("/chatChannel", ensureAuthenticated, chatChannel);
+router.use("/file", fileRoutes);
+router.use("/chat", ensureAuthenticated, Chat);
+router.use("/message", ensureAuthenticated, messageRoutes);
+router.use("/post", ensureAuthenticated, postRoutes);
+router.use("/category", categoryRoutes);
+router.use("/comment", ensureAuthenticated, commentRoutes);
+router.get("/search", searchController.search);
 
 // actulaizada
 
-export default app;
+export default router;

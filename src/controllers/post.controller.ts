@@ -11,6 +11,12 @@ class PostContrller {
       const { title, content, category, attatchments } = postSchema.parse(
         req.body
       );
+      const categories =
+        category?.map((item) => {
+          return {
+            id: item.value,
+          };
+        }) ?? undefined;
 
       const { user_id } = ParserService(req.cookies);
 
@@ -19,10 +25,8 @@ class PostContrller {
           title,
           content,
           authorId: user_id,
-          categories: {
-            connect: {
-              name: category,
-            },
+          subCategory: {
+            connect: categories,
           },
         },
       });
@@ -41,6 +45,13 @@ class PostContrller {
 
       const { user_id } = ParserService(req.cookies);
 
+      const categories =
+        category?.map((item) => {
+          return {
+            id: item.value,
+          };
+        }) ?? undefined;
+
       const post = await prisma.post.update({
         where: {
           id,
@@ -49,10 +60,8 @@ class PostContrller {
           title,
           content,
           authorId: user_id,
-          categories: {
-            connect: {
-              name: category,
-            },
+          subCategory: {
+            connect: categories,
           },
         },
       });

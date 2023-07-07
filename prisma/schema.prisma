@@ -119,6 +119,7 @@ model Post {
   title     String
   content   String?
   published Boolean @default(false)
+  private   Boolean @default(false)
 
   authorId       String        @db.ObjectId
   author         User?         @relation("author", fields: [authorId], references: [id])
@@ -191,24 +192,15 @@ model ChatChannel {
   updatedAt DateTime @updatedAt
 }
 
-model Attatchment {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  data    Blob[]
-  Post    Post?   @relation(fields: [postId], references: [id])
-  postId  String? @db.ObjectId
-  User    User?   @relation(fields: [userId], references: [id])
-  userId  String? @db.ObjectId
-  private Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Blob {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  data          String       @unique
-  Attatchment   Attatchment? @relation(fields: [attatchmentId], references: [id])
-  attatchmentId String?      @db.ObjectId
+model  Attatchment {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  orginalName String
+  fileName    String
+  mimeType    String
+  Post        Post?   @relation(fields: [postId], references: [id])
+  postId      String? @db.ObjectId
+  User        User?   @relation(fields: [userId], references: [id])
+  userId      String? @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
