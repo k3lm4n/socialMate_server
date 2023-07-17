@@ -123,7 +123,7 @@ class ChatController {
           AND: [
             {
               userIDs: {
-                hasSome: user_id,
+                hasSome: [user_id],
               },
               name: {
                 equals: "Private Chat",
@@ -226,13 +226,77 @@ class ChatController {
   async getById(req: Request, res: Response) {
     try {
       const { id } = req.params;
+      const { user_id } = ParserService(req.cookies.tokens);
       const data = await prisma.chat.findUnique({
         where: {
           id,
         },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          chatChannel: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              avatar: true,
+              members: {
+                select: {
+                  id: true,
+                  name: true,
+                  lastname: true,
+                  avatar: true,
+                },
+              },
+              creator: {
+                select: {
+                  id: true,
+                  name: true,
+                  lastname: true,
+                  avatar: true,
+                },
+              },
+            },
+          },
+          members: {
+            select: {
+              id: true,
+              name: true,
+              lastname: true,
+              avatar: true,
+            },
+          },
+        },
       });
-      console.log(data);
-      return res.status(200).json(data);
+
+      if (!data) {
+        return res.status(404).json({ message: "Chat não encontrado" });
+      }
+
+      const members = data.members.filter((member) => member.id !== user_id);
+      const mapChannel = {
+        id: data.id,
+        name: data.name,
+        description: data.description,
+        members: members.map((member) => {
+          if (member.id !== user_id) {
+            return {
+              id: member.id,
+              name: member.name + " " + member.lastname,
+              avatar: member.avatar,
+            };
+          }
+        }),
+        chatChannel: {
+          id: data.chatChannel?.id,
+          name: data.chatChannel?.name,
+          description: data.chatChannel?.description,
+          avatar: data.chatChannel?.avatar,
+        },
+      };
+      console.log(mapChannel);
+      return res.status(200).json(mapChannel);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });

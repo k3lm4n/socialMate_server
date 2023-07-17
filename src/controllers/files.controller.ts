@@ -1,10 +1,7 @@
-import express, { Router, Request, Response } from "express";
-import { initializeApp } from "firebase/app";
+import { Request, Response } from "express";
 
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../utils/firebase.config";
-import multer from "multer";
-import upload from "../middleware/storage";
 
 function giveCurrentDateTime() {
   const today = new Date();
@@ -20,7 +17,6 @@ class FileController {
   async upload(req: Request, res: Response) {
     try {
       const dateTime = giveCurrentDateTime();
-      // const dateTime = "giveCurrentDateTime()";
 
       const storageRef = ref(
         storage,
@@ -31,12 +27,11 @@ class FileController {
         contentType: req.file?.mimetype,
       };
 
-      console.log(req.files);
+      if (!req.file) {
+        const error = new Error("Please upload a file");
+        return res.status(400).send(error.message);
+      }
 
-      // if (!req.file) {
-      //   const error = new Error("Please upload a file");
-      //   return res.status(400).send(error.message);
-      // }
       const snapshot = await uploadBytesResumable(
         storageRef,
         req.file.buffer,
@@ -45,12 +40,10 @@ class FileController {
 
       const downloadURL = await getDownloadURL(snapshot.ref);
 
-      console.log("File successfully uploaded.");
       return res.send({
-        message: "file uploaded to firebase storage",
-        name: req.file?.originalname,
-        type: req.file?.mimetype,
-        downloadURL: downloadURL,
+        originalName: req.file?.originalname,
+        mimetype: req.file?.mimetype,
+        url: downloadURL,
       });
     } catch (error: any) {
       return res.status(400).send(error.message);

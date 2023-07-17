@@ -25,10 +25,36 @@ class MessageController {
             },
           },
         },
+        select: {
+          id: true,
+          content: true,
+          sender: {
+            select: {
+              id: true,
+              name: true,
+              lastname: true,
+            },
+          },
+          chat: {
+            select: {
+              id: true,
+            },
+          },
+          createdAt: true,
+        },
       });
 
-      io.to(message.chatId).emit("newIncomingMessage", chatChannel);
-      return res.status(201).json(chatChannel);
+      const newMessage = {
+        id: chatChannel.id,
+        content: chatChannel.content,
+        senderId: chatChannel.sender.id,
+        sender: chatChannel.sender.name + " " + chatChannel.sender.lastname,
+        chatId: chatChannel.chat?.id,
+        createdAt: chatChannel.createdAt,
+      };
+
+      io.to(message.chatId).emit("newIncomingMessage", newMessage);
+      return res.status(201).json(newMessage);
     } catch (error: any) {
       console.log(error);
       return res.status(400).json({ error: error.message });
@@ -59,6 +85,7 @@ class MessageController {
               id: true,
             },
           },
+          createdAt: true,
         },
       });
 
@@ -69,6 +96,7 @@ class MessageController {
           senderId: data.sender.id,
           sender: data.sender.name + " " + data.sender.lastname,
           chatId: data.chat?.id,
+          createdAt: data.createdAt,
         };
       });
 

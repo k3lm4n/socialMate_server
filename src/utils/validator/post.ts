@@ -14,10 +14,13 @@ export const postSchema = z.object({
     )
     .min(1, { message: "Category ID must be at least 1 characters" }),
   attatchments: z
-    .object({
-      filename: z.string(),
-      orinalname: z.string(),
-    })
+    .array(
+      z.object({
+        url: z.string(),
+        originalName: z.string(),
+        mimetype: z.string(),
+      })
+    )
     .optional(),
 });
 

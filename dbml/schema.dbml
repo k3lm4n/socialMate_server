@@ -1,0 +1,269 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  name String [not null]
+  lastname String [not null]
+  avatar String
+  address Address
+  birthdate DateTime
+  cretedGroups ChatChannel [not null]
+  chatChannels ChatChannel [not null]
+  chatChannelIDs String[] [not null]
+  attatchments Attatchment [not null]
+  posts Post [not null]
+  preferences userPreferences
+  Comment Comment [not null]
+  interest SubCategory [not null]
+  interestIDs String[] [not null]
+  course Category
+  courseId String
+  degree String [not null]
+  followedBy User [not null]
+  followedByIDs String[] [not null]
+  following User [not null]
+  followingIDs String[] [not null]
+  likes Likes [not null]
+  sharedPosts SharedPost [not null]
+  MessageSent Message [not null]
+  login Login
+  chats chat [not null]
+  chatIDs String[] [not null]
+  createdAt DateTime [default: `now()`, not null]
+}
+
+Table Login {
+  id String [pk]
+  username String [unique, not null]
+  email String [unique, not null]
+  phone String [unique]
+  password String [not null]
+  role Role [not null, default: 'USER']
+  user User [not null]
+  userId String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table userPreferences {
+  id String [pk]
+  emailUpdates Boolean [not null, default: true]
+  phoneUpdates Boolean [not null, default: true]
+  userId String [unique, not null]
+  user User [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table chat {
+  id String [pk]
+  name String
+  description String
+  members User [not null]
+  userIDs String[] [not null]
+  messages Message [not null]
+  chatChannel ChatChannel
+  chatChannelId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Comment {
+  id String [pk]
+  text String [not null]
+  authorId String [not null]
+  author User [not null]
+  postId String [not null]
+  post Post [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Post {
+  id String [pk]
+  title String [not null]
+  content String
+  published Boolean [not null, default: false]
+  private Boolean [not null, default: false]
+  authorId String [not null]
+  author User
+  attatchments Attatchment [not null]
+  categoryIDs String[] [not null]
+  categories Category [not null]
+  subCategory SubCategory [not null]
+  subCategoryIDs String[] [not null]
+  userId String[] [not null]
+  Comment Comment [not null]
+  likes Likes [not null]
+  shared SharedPost [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Likes {
+  id String [pk]
+  userId String [not null]
+  user User [not null]
+  postId String [not null]
+  post Post [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table SharedPost {
+  id String [pk]
+  userId String [not null]
+  user User [not null]
+  postId String [not null]
+  post Post [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Category {
+  id String [pk]
+  name String [unique, not null]
+  sigle String [unique, not null]
+  postIDs String[] [not null]
+  CategoriesOnPosts Post [not null]
+  user User [not null]
+  subCategories SubCategory [not null]
+  chatChannel ChatChannel [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table SubCategory {
+  id String [pk]
+  name String [not null]
+  sigle String [not null]
+  userId String[] [not null]
+  user User [not null]
+  postIDs String[] [not null]
+  CategoriesOnPosts Post [not null]
+  categoryIDs String [not null]
+  category Category [not null]
+  chatChannel ChatChannel [not null]
+  chatChannelIDs String[] [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table ChatChannel {
+  id String [pk]
+  name String [not null]
+  description String
+  avatar String
+  private Boolean [not null, default: false]
+  members User [not null]
+  userId String[] [not null]
+  subcategories SubCategory [not null]
+  subcategoriesId String[] [not null]
+  category Category
+  categoryId String
+  creator User
+  creatorId String
+  chat chat [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Attatchment {
+  id String [pk]
+  originalName String [not null]
+  mimetype String [not null]
+  url String [not null]
+  Post Post
+  postId String
+  User User
+  userId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Message {
+  id String [pk]
+  content String [not null]
+  sender User [not null]
+  senderId String [not null]
+  chat chat [not null]
+  chatId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Enum Role {
+  USER
+  ADMIN
+}
+
+Enum Status {
+  online
+  offline
+}
+
+Ref: User.chatChannelIDs > ChatChannel.id
+
+Ref: User.interestIDs > SubCategory.id
+
+Ref: User.courseId > Category.id
+
+Ref: User.followedByIDs > User.id
+
+Ref: User.followingIDs > User.id
+
+Ref: User.chatIDs > chat.id
+
+Ref: Login.userId - User.id [delete: Cascade]
+
+Ref: userPreferences.userId - User.id [delete: Cascade]
+
+Ref: chat.userIDs > User.id
+
+Ref: chat.chatChannelId > ChatChannel.id [delete: Cascade]
+
+Ref: Comment.authorId > User.id [delete: Cascade]
+
+Ref: Comment.postId > Post.id [delete: Cascade]
+
+Ref: Post.authorId > User.id [delete: Cascade]
+
+Ref: Post.categoryIDs > Category.id
+
+Ref: Post.subCategoryIDs > SubCategory.id
+
+Ref: Likes.userId > User.id [delete: Cascade]
+
+Ref: Likes.postId > Post.id [delete: Cascade]
+
+Ref: SharedPost.userId > User.id [delete: Cascade]
+
+Ref: SharedPost.postId > Post.id [delete: Cascade]
+
+Ref: Category.postIDs > Post.id
+
+Ref: SubCategory.userId > User.id
+
+Ref: SubCategory.postIDs > Post.id
+
+Ref: SubCategory.categoryIDs > Category.id
+
+Ref: SubCategory.chatChannelIDs > ChatChannel.id
+
+Ref: ChatChannel.userId > User.id
+
+Ref: ChatChannel.subcategoriesId > SubCategory.id
+
+Ref: ChatChannel.categoryId > Category.id
+
+Ref: ChatChannel.creatorId > User.id
+
+Ref: Attatchment.postId > Post.id
+
+Ref: Attatchment.userId > User.id
+
+Ref: Message.senderId > User.id [delete: Cascade]
+
+Ref: Message.chatId > chat.id [delete: Cascade]

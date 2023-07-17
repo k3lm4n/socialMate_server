@@ -82,7 +82,6 @@ class ControllerAuth {
 
   async me(req: Request, res: Response) {
     try {
-
       const { user_id } = ParserService(
         (req.headers.authorization as string) || req.cookies.tokens
       );
@@ -100,7 +99,14 @@ class ControllerAuth {
           },
         },
       });
-      res.status(200).json({ user });
+
+      const userReponse = {
+        id: user?.id,
+        name: user?.name,
+        username: user?.login?.username,
+      };
+
+      res.status(200).json({ user: userReponse });
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });

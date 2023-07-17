@@ -20,7 +20,7 @@ class GroupController {
         avatar,
         private: privacy,
       } = chatChannel.parse(req.body.data);
-      const creatorId = ParserService(req.cookies.tokens).user_id;
+      const creatorId = ParserService(req.cookies.tokens).user_id || "";
 
       const userId =
         members?.map((item) => {
@@ -28,6 +28,8 @@ class GroupController {
             id: item.value,
           };
         }) ?? undefined;
+
+      userId.push({ id: creatorId });
 
       const subcategoriesId =
         subcategories?.map((item) => {
@@ -75,7 +77,13 @@ class GroupController {
 
   async getCreateOptions(req: Request, res: Response) {
     try {
-      const users = await prisma.user.findMany();
+      const users = await prisma.user.findMany({
+        where: {
+          id: {
+            not: ParserService(req.cookies.tokens).user_id,
+          },
+        },
+      });
 
       const userOptions = users.map((user) => {
         return {
