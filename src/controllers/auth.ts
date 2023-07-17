@@ -18,6 +18,7 @@ class ControllerAuth {
         },
         select: {
           email: true,
+          username: true,
           role: true,
           id: true,
           password: true,
@@ -59,6 +60,7 @@ class ControllerAuth {
       const userReponse = {
         id: user.id,
         name: user.user.name,
+        username: user.username,
         lastname: user.user.lastname,
         email: user.email,
         role: user.role,
