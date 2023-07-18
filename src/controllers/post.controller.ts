@@ -150,6 +150,11 @@ class PostContrller {
               postIDs: true,
             },
           },
+          posts: {
+            select: {
+              id: true,
+            },
+          },
         },
       });
 
@@ -159,8 +164,12 @@ class PostContrller {
         const interests = getInterests.interest.map(({ postIDs }) =>
           postIDs.flat()
         );
+
+        const posteds = getInterests.posts.map((item) => item.id);
+
         const courses = getInterests.course.postIDs.map((value) => value);
-        posts.push(...interests.flat(), ...courses);
+
+        posts.push(...interests.flat(), ...posteds.flat(), ...courses);
       }
 
       const postAttached = await prisma.post.findMany({
