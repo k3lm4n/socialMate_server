@@ -190,9 +190,32 @@ class GroupController {
           id: true,
           name: true,
           avatar: true,
+          createdAt: true,
+          creator: {
+            select: {
+              name: true,
+            },
+          },
+          _count: {
+            select: {
+              members: true,
+            },
+          },
         },
       });
-      res.status(200).json({ chatChannel });
+
+      const mapChannel = chatChannel.map((channel) => {
+        return {
+          id: channel.id,
+          name: channel.name,
+          avatar: channel.avatar,
+          createdAt: channel.createdAt,
+          creator: channel.creator?.name,
+          members: channel._count?.members,
+        };
+      });
+
+      res.status(200).json(mapChannel);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });

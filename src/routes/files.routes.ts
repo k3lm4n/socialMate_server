@@ -7,6 +7,6 @@ const router = Router();
 const fileController = new FileController();
 
 router.post("/", ensureAuthenticated, upload, fileController.upload);
-// router.get("/:filename", fileController.getFile);
+router.get("/", fileController.getFile);
 
 export default router;

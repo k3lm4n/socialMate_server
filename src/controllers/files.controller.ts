@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../utils/firebase.config";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 function giveCurrentDateTime() {
   const today = new Date();
@@ -47,6 +50,36 @@ class FileController {
       });
     } catch (error: any) {
       return res.status(400).send(error.message);
+    }
+  }
+
+  async getFile(req: Request, res: Response) {
+    try {
+      const files = await prisma.attatchment.findMany({
+        select: {
+          id: true,
+          originalName: true,
+          User: {
+            select: {
+              name: true,
+            },
+          },
+          createdAt: true,
+        },
+      });
+
+      const mapFiles = files.map((file) => {
+        return {
+          id: file.id,
+          name: file.originalName,
+          owner: file.User?.name,
+          createdAt: file.createdAt,
+        };
+      });
+      return res.status(200).json(mapFiles);
+    } catch (err: any) {
+      console.log(err);
+      return res.status(400).send(err.message);
     }
   }
 }

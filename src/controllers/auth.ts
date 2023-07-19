@@ -97,6 +97,7 @@ class ControllerAuth {
           login: {
             select: {
               username: true,
+              role: true,
             },
           },
         },
@@ -106,6 +107,7 @@ class ControllerAuth {
         id: user?.id,
         name: user?.name,
         username: user?.login?.username,
+        role: user?.login?.role,
       };
 
       res.status(200).json({ user: userReponse });

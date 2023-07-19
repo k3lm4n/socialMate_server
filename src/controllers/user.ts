@@ -141,6 +141,7 @@ class UserController {
           login: {
             select: {
               username: true,
+              email: true,
             },
           },
         },
@@ -153,6 +154,7 @@ class UserController {
           username: user.login?.username,
           course: user.course?.sigle,
           degree: user.degree,
+          email: user.login?.email,
         };
       });
 

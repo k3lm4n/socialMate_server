@@ -13,13 +13,7 @@ dotenv.config();
 
 routes.get("/", categoryController.index);
 
-routes.get("/:id", async (req, res) => {
-  const { id } = req.params;
-  const category = await prisma.category.findUnique({
-    where: {
-      id,
-    },
-  });
-});
+routes.get("/courses/", categoryController.getAllCourses);
+routes.get("/interests", categoryController.getAllInterests);
 
 export default routes;

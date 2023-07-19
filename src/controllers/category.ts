@@ -112,6 +112,74 @@ class CategoryController {
       return res.status(500).json({ message: error.message || "Erro" });
     }
   }
+
+  async getAllCourses(req: Request, res: Response) {
+    try {
+      const courses = await prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+          sigle: true,
+          _count: {
+            select: {
+              user: true,
+            },
+          },
+        },
+      });
+
+      const mappedCourse = courses.map((course) => {
+        return {
+          id: course.id,
+          name: course.name,
+          sigle: course.sigle,
+          users: course._count.user,
+        };
+      });
+
+      return res.status(200).json(mappedCourse);
+    } catch (err: any) {
+      console.log(err);
+      return res.status(500).json({ message: err.message || "Erro" });
+    }
+  }
+
+  async getAllInterests(req: Request, res: Response) {
+    try {
+      const interests = await prisma.subCategory.findMany({
+        select: {
+          id: true,
+          name: true,
+          sigle: true,
+          category: {
+            select: {
+              sigle: true,
+            },
+          },
+          _count: {
+            select: {
+              user: true,
+            },
+          },
+        },
+      });
+
+      const mappedInterests = interests.map((interest) => {
+        return {
+          id: interest.id,
+          name: interest.name,
+          sigle: interest.sigle,
+          course: interest.category.sigle,
+          users: interest._count.user,
+        };
+      });
+
+      return res.status(200).json(mappedInterests);
+    } catch (err: any) {
+      console.log(err);
+      return res.status(500).json({ message: err.message || "Erro" });
+    }
+  }
 }
 
 export default CategoryController;
