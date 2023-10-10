@@ -11,7 +11,7 @@ class ChatController {
       const { members, channel, name, description } = chatSchema.parse(
         req.body
       );
-      if (members) {
+      if (members && members.length>0) {
         members.push(ParserService(req.cookies.tokens).user_id);
 
         const exist_chat = await prisma.chat.findMany({
@@ -67,6 +67,9 @@ class ChatController {
           return res.status(201).json(chatForChannel);
         }
       }
+
+      
+
       const chat = await prisma.chat.create({
         data: {
           members: members
