@@ -51,9 +51,13 @@ class MessageController {
         sender: chatChannel.sender.name + " " + chatChannel.sender.lastname,
         chatId: chatChannel.chat?.id,
         createdAt: chatChannel.createdAt,
+        isOfSender: chatChannel.sender.id === ParserService(req.cookies.tokens).user_id? true : false,
       };
 
       io.to(message.chatId).emit("newIncomingMessage", newMessage);
+
+
+
       return res.status(201).json(newMessage);
     } catch (error: any) {
       console.log(error);
@@ -97,6 +101,7 @@ class MessageController {
           sender: data.sender.name + " " + data.sender.lastname,
           chatId: data.chat?.id,
           createdAt: data.createdAt,
+          isOfSender: data.sender.id === ParserService(req.cookies.tokens).user_id? true : false,
         };
       });
 
