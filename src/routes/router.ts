@@ -9,7 +9,8 @@ import authRoutes from "./auth.routes";
 import messageRoutes from "./message.routes";
 import searchController from "../controllers/search.controller";
 import fileRoutes from "./files.routes";
-import attachmentRoutes from "./attachment.routes"; 
+import contentRoutes from "./content.routes";
+import dashboardRoutes from "./dashboard.routes";
 import { ensureAuthenticated } from "../middleware/EnsureAuthenticated";
 
 const router = Router();
@@ -24,9 +25,9 @@ router.use("/message", ensureAuthenticated, messageRoutes);
 router.use("/post", ensureAuthenticated, postRoutes);
 router.use("/category", categoryRoutes);
 router.use("/comment", ensureAuthenticated, commentRoutes);
-router.use("/attachment", ensureAuthenticated, attachmentRoutes);
+router.use("/attachment", ensureAuthenticated, contentRoutes);
+router.use("/dashboard", ensureAuthenticated, dashboardRoutes);
 router.get("/search", searchController.search);
-
 
 // actulaizada
 

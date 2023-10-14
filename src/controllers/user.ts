@@ -195,6 +195,8 @@ class UserController {
       return res.status(500).json({ message: error.message || "Erro" });
     }
   }
+
+
 }
 
 export default new UserController();

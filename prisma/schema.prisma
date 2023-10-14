@@ -30,6 +30,7 @@ model User {
   chatChannels   ChatChannel[]    @relation(fields: [chatChannelIDs], references: [id])
   chatChannelIDs String[]         @db.ObjectId
   attatchments   Attatchment[]
+  content        Content[]
   posts          Post[]           @relation("author")
   preferences    userPreferences?
   Comment        Comment[]
@@ -187,7 +188,7 @@ model SubCategory {
   id                String        @id @default(auto()) @map("_id") @db.ObjectId
   name              String
   sigle             String
-  attatchments      Attatchment[]
+  attatchments      Content[]
   userId            String[]      @db.ObjectId
   user              User[]        @relation(fields: [userId], references: [id])
   postIDs           String[]      @db.ObjectId
@@ -224,20 +225,33 @@ model ChatChannel {
 }
 
 model Attatchment {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  originalName  String
-  mimetype      String
-  url           String
-  category      SubCategory? @relation(fields: [categoryId], references: [id])
-  categoryId    String?      @db.ObjectId
-  Post          Post?        @relation(fields: [postId], references: [id])
-  postId        String?      @db.ObjectId
-  User          User?        @relation(fields: [userId], references: [id])
-  userId        String?      @db.ObjectId
-  discriminator FileType?
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  originalName String
+  mimetype     String
+  url          String
+  description  String?
+  contentId    String?  @db.ObjectId
+  Content      Content? @relation(fields: [contentId], references: [id])
+  Post         Post?    @relation(fields: [postId], references: [id])
+  postId       String?  @db.ObjectId
+  User         User?    @relation(fields: [userId], references: [id])
+  userId       String?  @db.ObjectId
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Content {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  description   String?
+  userId        String?        @db.ObjectId
+  User          User?          @relation(fields: [userId], references: [id])
+  attatchment   Attatchment[]
+  category      SubCategory?  @relation(fields: [categoryId], references: [id])
+  categoryId    String?       @db.ObjectId
+  discriminator FileType?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 enum FileType {

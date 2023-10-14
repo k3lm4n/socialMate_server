@@ -144,6 +144,19 @@ class CategoryController {
     }
   }
 
+  async geyCategoryCount(req: Request, res: Response) {
+    try{
+      const count = await prisma.category.findMany({
+        
+      })
+
+    }catch(err:any){
+      console.log(err)
+      return res.status(500).json({ message: err.message || "Erro" });
+    }
+  }
+
+
   async getAllInterests(req: Request, res: Response) {
     try {
       const interests = await prisma.subCategory.findMany({

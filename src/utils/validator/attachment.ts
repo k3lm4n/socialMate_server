@@ -1,20 +1,34 @@
 import z from "zod";
 
 export const AttachmentSchema = z.object({
-  url: z.string().min(3, { message: "Url must be at least 3 characters" }),
-  mimetype: z
+  description: z
     .string()
-    .min(3, { message: "Mimetype must be at least 3 characters" }),
-  originalName: z
-    .string()
-    .min(3, { message: "OriginalName must be at least 3 characters" }),
-  discriminator: z
-    .enum(["TEST_FILE", "FILE", "BOOK"]).optional(),
-    categoryId: z.string().min(3, { message: "Category must be at least 3 characters" }).optional(),
+    .min(3, { message: "Discription must be at least 3 characters" })
+    .optional(),
+  discriminator: z.enum(["TEST_FILE", "FILE", "BOOK"]).optional(),
+  categoryId: z
+    .object({
+      value: z.string().min(1, { message: "Members must be at least 1" }),
+      label: z.string().min(1, { message: "Members must be at least 1" }),
+    })
+    .optional(),
+  attatchments: z
+    .array(
+      z.object({
+        url: z.string(),
+        originalName: z.string(),
+        mimetype: z.string(),
+      })
+    )
+    .optional(),
 });
 
-
-export  const DiscriminatorSchema = z.object({
-    discriminator: z
-        .enum(["TEST_FILE", "FILE", "BOOK"]).optional(),
-})
+export const DiscriminatorSchema = z.object({
+  discriminator: z.enum(["TEST_FILE", "FILE", "BOOK"]).optional(),
+  category: z
+    .object({
+      value: z.string().min(1, { message: "Members must be at least 1" }),
+      label: z.string().min(1, { message: "Members must be at least 1" }),
+    })
+    .optional(),
+});

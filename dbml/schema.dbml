@@ -13,6 +13,7 @@ Table User {
   chatChannels ChatChannel [not null]
   chatChannelIDs String[] [not null]
   attatchments Attatchment [not null]
+  content Content [not null]
   posts Post [not null]
   preferences userPreferences
   Comment Comment [not null]
@@ -139,7 +140,7 @@ Table SubCategory {
   id String [pk]
   name String [not null]
   sigle String [not null]
-  attatchments Attatchment [not null]
+  attatchments Content [not null]
   userId String[] [not null]
   user User [not null]
   postIDs String[] [not null]
@@ -176,12 +177,25 @@ Table Attatchment {
   originalName String [not null]
   mimetype String [not null]
   url String [not null]
-  category SubCategory
-  categoryId String
+  description String
+  contentId String
+  Content Content
   Post Post
   postId String
   User User
   userId String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Content {
+  id String [pk]
+  description String
+  userId String
+  User User
+  attatchment Attatchment [not null]
+  category SubCategory
+  categoryId String
   discriminator FileType
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
@@ -270,11 +284,15 @@ Ref: ChatChannel.categoryId > Category.id
 
 Ref: ChatChannel.creatorId > User.id
 
-Ref: Attatchment.categoryId > SubCategory.id
+Ref: Attatchment.contentId > Content.id
 
 Ref: Attatchment.postId > Post.id
 
 Ref: Attatchment.userId > User.id
+
+Ref: Content.userId > User.id
+
+Ref: Content.categoryId > SubCategory.id
 
 Ref: Message.senderId > User.id [delete: Cascade]
 
