@@ -152,10 +152,16 @@ class PostContrller {
     try {
       const posts = await prisma.post.findMany({
         include: {
-          categories: true,
+          subCategory: {
+            select:{
+              id: true,
+              name: true,
+              sigle: true,
+            }
+          },
         },
       });
-      res.status(200).json({ posts });
+      res.status(200).json(posts);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
