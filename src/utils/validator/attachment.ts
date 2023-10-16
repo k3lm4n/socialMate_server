@@ -32,3 +32,9 @@ export const DiscriminatorSchema = z.object({
     })
     .optional(),
 });
+
+export const GetContentSchema = z.object({
+  contentId: z.string().min(1, { message: "must be at least 1" }).optional(),
+  discriminator: z.enum(["TEST_FILE", "FILE", "BOOK"]).optional(),
+  category: z.string().min(1, { message: "must be at least 1" }).optional(),
+});

@@ -9,16 +9,16 @@ class CommentController {
   async create(req: Request, res: Response) {
     try {
       const { text, postId } = commentSchema.parse(req.body);
-      const { user_id: authorId } = ParserService(req.cookies);
+      const user_id = ParserService(req.cookies.tokens).user_id || "";
 
       const comment = await prisma.comment.create({
         data: {
           text,
-          authorId,
+          authorId: user_id,
           postId,
         },
       });
-      res.status(200).json({ comment });
+      res.status(201).json(comment);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
@@ -53,6 +53,36 @@ class CommentController {
         },
       });
       res.status(200).json({ comment });
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ message: error.message || "Erro" });
+    }
+  }
+
+  async getAllCommentsByPost(req: Request, res: Response) {
+    try {
+      const { postId } = req.params;
+      const comments = await prisma.comment.findMany({
+        where: {
+          postId: {
+            equals: postId,
+          },
+        },
+        select: {
+          id: true,
+          text: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              lastname: true,
+            },
+          },
+          createdAt: true,
+        },
+      });
+
+      return res.status(200).json({ comments });
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });

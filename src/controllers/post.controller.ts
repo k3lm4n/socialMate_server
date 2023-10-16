@@ -110,8 +110,38 @@ class PostContrller {
         where: {
           id,
         },
+        include: {
+          attatchments: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              lastname: true,
+            },
+          },
+        },
       });
-      res.status(200).json({ post });
+
+      const postTreated = {
+        id: post!.id,
+        title: post!.title,
+        content: post!.content,
+        published: post!.published,
+        private: post!.private,
+        attatchments: post!.attatchments.map((item) => {
+          return {
+            id: item.id,
+            url: item.url,
+            mimetype: item.mimetype,
+            originalName: item.originalName,
+          };
+        }),
+        author: post!.author?.name + " " + post!.author?.lastname,
+        createdAt: post!.createdAt,
+        updatedAt: post!.updatedAt,
+      };
+
+      return res.status(200).json(postTreated);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
