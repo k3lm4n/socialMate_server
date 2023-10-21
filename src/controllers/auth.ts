@@ -94,6 +94,21 @@ class ControllerAuth {
         select: {
           id: true,
           name: true,
+          lastname: true,
+          course: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          interest: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          birthdate: true,
+          address: true,
           login: {
             select: {
               username: true,
@@ -103,11 +118,31 @@ class ControllerAuth {
         },
       });
 
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      const mapInterests = user.interest?.map((interest) => {
+        return {
+          id: interest.id,
+          name: interest.name,
+        };
+      });
       const userReponse = {
-        id: user?.id,
-        name: user?.name,
-        username: user?.login?.username,
-        role: user?.login?.role,
+        id: user.id,
+        name: user.name,
+        lastname: user.lastname,
+        username: user.login?.username,
+        birthdate: user.birthdate,
+        course: user.course?.name,
+        address:
+          user.address?.city +
+          " - " +
+          user.address?.street +
+          " - " +
+          user.address?.zip,
+        role: user.login?.role,
+        interest: mapInterests,
       };
 
       res.status(200).json({ user: userReponse });

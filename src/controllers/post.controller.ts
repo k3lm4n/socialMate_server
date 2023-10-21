@@ -153,15 +153,106 @@ class PostContrller {
       const posts = await prisma.post.findMany({
         include: {
           subCategory: {
-            select:{
+            select: {
               id: true,
               name: true,
               sigle: true,
-            }
+            },
           },
         },
       });
       res.status(200).json(posts);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ message: error.message || "Erro" });
+    }
+  }
+
+  async getAllMy(req: Request, res: Response) {
+    try {
+      const authorId = ParserService(req.cookies.tokens).user_id;
+      const postAttached = await prisma.post.findMany({
+        where: {
+          authorId,
+        },
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          published: true,
+          private: true,
+          attatchments: true,
+          categories: {
+            select: {
+              id: true,
+              name: true,
+              sigle: true,
+            },
+          },
+          subCategory: {
+            select: {
+              id: true,
+              name: true,
+              sigle: true,
+            },
+          },
+          author: {
+            select: {
+              id: true,
+              name: true,
+              lastname: true,
+            },
+          },
+          _count: {
+            select: {
+              Comment: true,
+              likes: true,
+              shared: true,
+            },
+          },
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+
+      const postTreated = postAttached.map((item) => {
+        return {
+          id: item.id,
+          title: item.title,
+          content: item.content,
+          published: item.published,
+          private: item.private,
+          attatchments: item.attatchments.map((item) => {
+            return {
+              id: item.id,
+              url: item.url,
+              mimetype: item.mimetype,
+              originalName: item.originalName,
+            };
+          }),
+          categories: item.categories.map((item) => {
+            return {
+              id: item.id,
+              name: item.name,
+              sigle: item.sigle,
+            };
+          }),
+          subCategory: item.subCategory.map((item) => {
+            return {
+              id: item.id,
+              name: item.name,
+              sigle: item.sigle,
+            };
+          }),
+          likes: item._count.likes,
+          comments: item._count.Comment,
+          shared: item._count.shared,
+          author: item.author?.name + " " + item.author?.lastname,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        };
+      });
+      res.status(200).json(postTreated);
     } catch (error: any) {
       console.log(error);
       return res.status(500).json({ message: error.message || "Erro" });
