@@ -33,6 +33,7 @@ export const roomHandler = (socket: Socket) => {
     console.log("user created the room");
   };
   const joinRoom = ({ roomId, peerId, userName }: IJoinRoomParams) => {
+    
     if (!rooms[roomId]) rooms[roomId] = {};
     if (!chats[roomId]) chats[roomId] = [];
     socket.emit("get-messages", chats[roomId]);
@@ -114,7 +115,7 @@ io.on("connection", (socket) => {
       });
     }
   });
-  
+
   roomHandler(socket);
   socket.on("disconnect", () => {
     console.log("user disconnected");

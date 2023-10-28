@@ -126,6 +126,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+/peerjs-server/node_modules
 /build
 # vscode
 .vscode/*

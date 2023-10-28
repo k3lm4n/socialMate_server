@@ -7,6 +7,8 @@
   "license": "MIT",
   "dependencies": {
     "@types/uuid": "^9.0.6",
+    "agora-access-token": "^2.0.4",
+    "agora-token": "^2.0.3",
     "bcryptjs": "^2.4.3",
     "chalk": "^5.2.0",
     "config": "^3.3.9",
@@ -22,6 +24,7 @@
     "morgan": "^1.10.0",
     "prisma": "^5.0.0",
     "socket.io": "^4.6.1",
+    "twilio": "^4.19.0",
     "uuid": "^9.0.1",
     "zod-error": "^1.5.0"
   },
