@@ -27,6 +27,7 @@ app.use(
       "http://localhost:3030",
       "https://social.oowl.tech",
       "http://localhost:3000",
+      "https://socialmate.k3lm4n.io/"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
