@@ -27,9 +27,9 @@ app.use(
       "http://localhost:3030",
       "https://social.oowl.tech",
       "http://localhost:3000",
-      "https://socialmate.k3lm4n.io/",
-      "https://social-mate-r5d2k6ddp-k3lm4n.vercel.app/",
-      "https://social-mate.vercel.app/"
+      "https://socialmate.k3lm4n.io",
+      "https://social-mate-r5d2k6ddp-k3lm4n.vercel.app",
+      "https://social-mate.vercel.app"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
