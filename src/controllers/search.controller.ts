@@ -7,9 +7,7 @@ class SearchController {
   async search(req: Request, res: Response) {
     try {
       const { query } = req.query || "";
-      console.log("====================================");
-      console.log(query);
-      console.log("====================================");
+
       const users = await prisma.user.findMany({
         where: {
           OR: [
@@ -104,10 +102,6 @@ class SearchController {
       });
 
       const response = [ ...mappedUsers, ...mappedChannels ];
-
-      console.log("====================================");
-      console.log(response);
-      console.log("====================================");
 
       return res.status(200).json(response);
     } catch (error: any) {

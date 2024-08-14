@@ -5,10 +5,10 @@ import { ensureAuthenticated } from "../middleware/EnsureAuthenticated";
 const routes = Router();
 
 
+routes.post("/", userController.register);
+
 
 routes.get("/",ensureAuthenticated, userController.getAll);
-
-routes.post("/", userController.register);
 
 routes.get("/:id",ensureAuthenticated, userController.getById);
 
